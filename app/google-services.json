@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "893931592162",
+    "project_id": "classroom-adefd",
+    "storage_bucket": "classroom-adefd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:893931592162:android:4fec8f6ccaf60ada1101bb",
+        "android_client_info": {
+          "package_name": "com.example.classroom"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "893931592162-u9cqeknh54lp3khujg3eg2eq8ptd0umt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.classroom",
+            "certificate_hash": "dbea7cd874c2d4ace2165af58b6b447cd94082ae"
+          }
+        },
+        {
+          "client_id": "893931592162-v2ko2ee01mc9lokbdh1r4s4vnvnop19s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuvBmqP1su3N8l4CtCqVlHVwV80i4vJS8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "893931592162-v2ko2ee01mc9lokbdh1r4s4vnvnop19s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
