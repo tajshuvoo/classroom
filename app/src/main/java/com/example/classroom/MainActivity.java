@@ -7,8 +7,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -46,6 +49,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //status bar color
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(getResources().getColor(R.color.white));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                View decor = getWindow().getDecorView();
+                decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            }
+        }
 
         signInButton = findViewById(R.id.sign_in_button);
         signInButton.setSize(SignInButton.SIZE_STANDARD);
@@ -112,15 +126,16 @@ public class MainActivity extends AppCompatActivity {
 
                     database.getReference().child("Users").child(user.getUid()).setValue(users);
 
-                    navigateToSecondActivity();
+                    navigateToSecondActivity(user);
                 }
             }
         });
     }
 
-    private void navigateToSecondActivity() {
+    private void navigateToSecondActivity(FirebaseUser user) {
 
         Intent intent =new Intent(MainActivity.this,SecondActivity.class);
+        intent.putExtra("userId",user.getUid());
         startActivity(intent);
     }
 
