@@ -3,7 +3,9 @@ package com.example.classroom;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
@@ -123,7 +125,16 @@ public class SecondActivity extends AppCompatActivity {
         googleSignInClient.signOut().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
+                //clear session data and update login status
+
+               //clear the user UID from SharedPreferences
+                SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.remove("userId"); // Remove the "uid" key to indicate the user is not logged in
+                editor.apply();
+
                 startActivity(new Intent(SecondActivity.this,MainActivity.class));
+                finishAffinity();
             }
         });
     }

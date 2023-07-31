@@ -5,7 +5,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -67,27 +69,35 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().hide();
 
         auth = FirebaseAuth.getInstance();
-        database = FirebaseDatabase.getInstance(" https://classroom-adefd-default-rtdb.asia-southeast1.firebasedatabase.app");
+        // Check if the user ID is stored in SharedPreferences
+        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        String userId = sharedPreferences.getString("userId", null);
+        if (userId== null) {
+            // User is not logged in, navigate to the next activity
+
+            database = FirebaseDatabase.getInstance(" https://classroom-adefd-default-rtdb.asia-southeast1.firebasedatabase.app");
 
 
+            String s = "893931592162-v2ko2ee01mc9lokbdh1r4s4vnvnop19s.apps.googleusercontent.com";
+
+            googleSignInOptions = new GoogleSignInOptions.Builder(googleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(s)
+                    .requestEmail()
+                    .build();
+
+            googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
+
+            signInButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    signIn();
+                }
+            });
+        }
 
 
-        String s="893931592162-v2ko2ee01mc9lokbdh1r4s4vnvnop19s.apps.googleusercontent.com";
-
-        googleSignInOptions = new GoogleSignInOptions.Builder(googleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(s)
-                .requestEmail()
-                .build();
-
-        googleSignInClient = GoogleSignIn.getClient(this,googleSignInOptions);
-
-        signInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                signIn();
-            }
-        });
-
+       else {    startNextActivity();
+        }
     }
 
     private void signIn() {
@@ -126,18 +136,29 @@ public class MainActivity extends AppCompatActivity {
 
                     database.getReference().child("Users").child(user.getUid()).setValue(users);
 
-                    navigateToSecondActivity(user);
+                    startNextActivity();
                 }
             }
         });
     }
 
-    private void navigateToSecondActivity(FirebaseUser user) {
-
-        Intent intent =new Intent(MainActivity.this,SecondActivity.class);
-        intent.putExtra("userId",user.getUid());
-        startActivity(intent);
+    // After successful login, save the user's UID to SharedPreferences
+    private void saveUserIdToSharedPreferences(String userId) {
+        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("userId", userId);
+        editor.apply();
     }
+
+
+    private void startNextActivity() {
+        String userId = auth.getCurrentUser().getUid();
+        saveUserIdToSharedPreferences(userId);
+        startActivity(new Intent(MainActivity.this, SecondActivity.class));
+        finish();
+    }
+
+    // ...
 
 
 }
