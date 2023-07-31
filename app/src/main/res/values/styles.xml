@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme.SplashScreen" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize the theme as needed -->
+        <item name="android:windowBackground">@drawable/splash_screen_background</item>
+        <!-- Add other theme attributes if necessary -->
+    </style>
+
+</resources>
