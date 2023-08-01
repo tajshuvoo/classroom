@@ -1,7 +1,12 @@
 package com.example.classroom;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,11 +15,13 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -24,6 +31,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 
 public class SecondActivity extends AppCompatActivity {
 
@@ -33,6 +41,12 @@ public class SecondActivity extends AppCompatActivity {
     TextView name,email;
     Button signOut;
     String userId;
+
+
+    //hamburger
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+    private Toolbar toolbar;
 
     //fab
     private boolean isFabExpanded = false;
@@ -55,9 +69,40 @@ public class SecondActivity extends AppCompatActivity {
             }
         }
 
-        name = findViewById(R.id.name);
-        email= findViewById(R.id.email);
-        signOut = findViewById(R.id.button);
+        //hamburger
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.navigation_view);
+        toolbar = findViewById(R.id.toolbar);
+
+        setSupportActionBar(toolbar);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int itemId = item.getItemId();
+                if (itemId == R.id.menu_profile) {
+                    // Handle Profile click (e.g., open ProfileActivity)
+                    // startActivity(new Intent(SecondActivity.this, ProfileActivity.class));
+                } else if (itemId == R.id.menu_settings) {
+                    // Handle Settings click (e.g., open SettingsActivity)
+                    // startActivity(new Intent(SecondActivity.this, SettingsActivity.class));
+                } else if (itemId == R.id.menu_sign_out) {
+                    // Handle Sign Out click
+                  signOUT();
+                }
+
+                drawerLayout.closeDrawer(GravityCompat.START);
+                return true;
+            }
+        });
+
+
+
+
 
         //fab
         fabMain = findViewById(R.id.fabMain);
@@ -75,19 +120,9 @@ public class SecondActivity extends AppCompatActivity {
         googleSignInClient = GoogleSignIn.getClient(this,googleSignInOptions);
 
         GoogleSignInAccount acct= GoogleSignIn.getLastSignedInAccount(this);
-        if(acct!=null){
-            String pName = acct.getDisplayName();
-            String pEmail = acct.getEmail();
-            name.setText(pName);
-            email.setText(pEmail);
-        }
 
-        signOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                signOUT();
-            }
-        });
+
+
 
         //fab
         fabMain.setOnClickListener(new View.OnClickListener() {

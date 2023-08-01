@@ -1,0 +1,12 @@
+<!-- res/layout/nav_header_main.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+    <!-- Customize your header layout here (e.g., user profile image, name, etc.) -->
+
+</LinearLayout>
