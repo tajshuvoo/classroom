@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="@android:color/white">
+
+    <!-- Toolbar -->
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="fill_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_marginTop="4dp"
+        android:background="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="?android:attr/homeAsUpIndicator"
+        app:title="Create Class"
+        app:titleTextColor="@android:color/black" />
+
+    <EditText
+        android:id="@+id/editTextClassName"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_marginTop="20dp"
+        android:background="@android:color/darker_gray"
+        android:hint="Classroom Name (Required)"
+        android:inputType="text"
+        android:maxLines="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+    <EditText
+        android:id="@+id/editTextSection"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_marginTop="8dp"
+        android:hint="Section"
+        android:inputType="text"
+        android:maxLines="1"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintTop_toBottomOf="@+id/editTextClassName" />
+
+    <EditText
+        android:id="@+id/editTextRoom"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_marginTop="8dp"
+        android:hint="Room"
+        android:inputType="text"
+        android:maxLines="1"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintTop_toBottomOf="@+id/editTextSection" />
+
+    <EditText
+        android:id="@+id/editTextSubject"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_marginTop="8dp"
+        android:hint="Subject"
+        android:inputType="text"
+        android:maxLines="1"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintTop_toBottomOf="@+id/editTextRoom" />
+
+    <Button
+        android:id="@+id/buttonCreate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:backgroundTint="@android:color/white"
+        android:text="Create"
+        android:textColor="@android:color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextSubject" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

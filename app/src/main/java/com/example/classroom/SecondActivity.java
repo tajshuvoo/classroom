@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,14 +17,18 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
+import com.example.classroom.adapter.ClassroomAdapter;
+import com.example.classroom.model.Classroom;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -32,6 +38,14 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SecondActivity extends AppCompatActivity {
 
@@ -40,7 +54,7 @@ public class SecondActivity extends AppCompatActivity {
 
     TextView name,email;
     Button signOut;
-    String userId;
+
 
 
     //hamburger
@@ -52,6 +66,14 @@ public class SecondActivity extends AppCompatActivity {
     private boolean isFabExpanded = false;
     private FloatingActionButton fabMain;
     private ExtendedFloatingActionButton fabOption1, fabOption2;
+
+    //recyclerview
+    private RecyclerView recyclerView;
+    private ClassroomAdapter adapter;
+    private List<Classroom> classroomList;
+
+    private DatabaseReference databaseReference;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +90,8 @@ public class SecondActivity extends AppCompatActivity {
                 decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
             }
         }
+
+
 
         //hamburger
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -103,6 +127,80 @@ public class SecondActivity extends AppCompatActivity {
 
 
 
+        // recycler view work
+        recyclerView = findViewById(R.id.recyclerViewClassrooms);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        classroomList = new ArrayList<>();
+        adapter = new ClassroomAdapter(classroomList);
+        recyclerView.setAdapter(adapter);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        String userId = sharedPreferences.getString("userId", null);
+
+
+        if (userId != null) {
+            // Reference to the user's linked_classes node in Firebase
+            DatabaseReference linkedClassesRef = FirebaseDatabase.getInstance("https://classroom-adefd-default-rtdb.asia-southeast1.firebasedatabase.app")
+                    .getReference().child("linked_classes").child(userId).child("classrooms");
+//            Toast.makeText(SecondActivity.this,"hi",Toast.LENGTH_LONG).show();
+            // Fetch the linked classroom IDs for the user
+            linkedClassesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    classroomList.clear();
+
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        String classroomId = snapshot.getKey();
+//                        Toast.makeText(SecondActivity.this,classroomId,Toast.LENGTH_LONG).show();
+                        // Reference to the classroom with this ID
+                        DatabaseReference classroomRef = FirebaseDatabase.getInstance("https://classroom-adefd-default-rtdb.asia-southeast1.firebasedatabase.app")
+                                .getReference().child("classrooms").child(classroomId);
+
+                        classroomRef.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                                if(task.isSuccessful()){
+
+                                    if(task.getResult().exists()){
+
+                                        DataSnapshot dataSnapshot =task.getResult();
+                                        String className = dataSnapshot.child("className").getValue(String.class);
+                                        String classroomId = dataSnapshot.child("classroomId").getValue(String.class);
+                                        String room = dataSnapshot.child("room").getValue(String.class);
+                                        String section = dataSnapshot.child("section").getValue(String.class);
+                                        String subject = dataSnapshot.child("subject").getValue(String.class);
+                                        String teacherUid = dataSnapshot.child("teacherUid").getValue(String.class);
+
+
+                                    // Create a new Classroom object with retrieved data
+                                    Classroom classroom = new Classroom(className, classroomId, room, section, subject, teacherUid);
+
+                                    // Add the Classroom object to the list and notify the adapter
+                                    classroomList.add(classroom);
+                                    adapter.notifyDataSetChanged();
+                                    } else {
+                                    // Handle the case where the dataSnapshot does not exist
+                                    Log.e("ClassroomAdapter", "DataSnapshot does not exist");
+                                }
+
+                                }
+                            }
+                        });
+
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    // Handle errors
+                }
+            });
+        }
+
+
+
 
         //fab
         fabMain = findViewById(R.id.fabMain);
@@ -113,13 +211,14 @@ public class SecondActivity extends AppCompatActivity {
         fabOption2.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
 
 
-        userId = getIntent().getStringExtra("userId");
+
 
 
         googleSignInOptions = new GoogleSignInOptions.Builder(googleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
         googleSignInClient = GoogleSignIn.getClient(this,googleSignInOptions);
 
         GoogleSignInAccount acct= GoogleSignIn.getLastSignedInAccount(this);
+
 
 
 
@@ -147,7 +246,7 @@ public class SecondActivity extends AppCompatActivity {
         fabOption2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Handle Option 2 click
+                startActivity(new Intent(SecondActivity.this,CreateClassroomActivity.class));
                 closeFabMenu();
             }
         });

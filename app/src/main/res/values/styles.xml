@@ -13,7 +13,10 @@
         <!-- Customize other style attributes if needed -->
     </style>
 
-
-
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Remove the windowActionBar attribute -->
+        <item name="windowNoTitle">true</item>
+        <!-- Other theme attributes -->
+    </style>
 
 </resources>
