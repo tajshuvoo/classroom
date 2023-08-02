@@ -12,7 +12,7 @@ public class Classroom {
         // Default constructor required for Firebase
     }
 
-    public Classroom(String classroomId, String className, String section, String room, String subject, String teacherUid) {
+    public Classroom(String className, String classroomId, String room, String section, String subject, String teacherUid) {
         this.classroomId = classroomId;
         this.className = className;
         this.section = section;

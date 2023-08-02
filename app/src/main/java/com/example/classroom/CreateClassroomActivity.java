@@ -18,6 +18,8 @@ import android.widget.Toast;
 
 import com.example.classroom.model.Classroom;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -90,30 +92,27 @@ public class CreateClassroomActivity extends AppCompatActivity {
                 String userId = sharedPreferences.getString("userId", null);
 
                 //linked the classroom with the userId
-                    FirebaseDatabase database;
-                    database = FirebaseDatabase.getInstance(" https://classroom-adefd-default-rtdb.asia-southeast1.firebasedatabase.app");
+                    DatabaseReference userRef = FirebaseDatabase.getInstance("https://classroom-adefd-default-rtdb.asia-southeast1.firebasedatabase.app").getReference()
+                            .child("linked_classes").child(userId).child("classrooms");
 
-
-                    DatabaseReference userRef = database.getReference().child("Users").child(userId);
-                    Map<String, Object> linkedClasses = new HashMap<>();
-                    linkedClasses.put(classroomId, true);
-
-                    userRef.child("linked_classes").updateChildren(linkedClasses)
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        // Classroom ID added to the user's linked_classes successfully
-                                    } else {
-                                        // Failed to add classroom ID to the user's linked_classes
-                                    }
-                                }
-                            });
+                    userRef.child(classroomId).setValue(classroomId);
+//                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                                @Override
+//                                public void onSuccess(Void aVoid) {
+//                                    // Classroom ID added to linked_classes successfully
+//                                }
+//                            })
+//                            .addOnFailureListener(new OnFailureListener() {
+//                                @Override
+//                                public void onFailure(@NonNull Exception e) {
+//                                    // Handle errors
+//                                }
+//                            });
 
 
 
                 // Create a Classroom object with the information
-                Classroom classroom = new Classroom(classroomId, className, section, room, subject, userId);
+                Classroom classroom = new Classroom(className, classroomId, room, section, subject, userId);
 
                 // Save the Classroom object to Firebase Realtime Database
                 newClassroomRef.setValue(classroom)
