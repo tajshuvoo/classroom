@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">Classroom</string>
 
-        <!-- Other strings in your strings.xml file -->
-        <string name="navigation_drawer_open">Open navigation drawer</string>
-        <string name="navigation_drawer_close">Close navigation drawer</string>
+    <!-- Other strings in your strings.xml file -->
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 
 
 </resources>

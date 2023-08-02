@@ -147,7 +147,7 @@ public class SecondActivity extends AppCompatActivity {
         fabOption2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Handle Option 2 click
+                startActivity(new Intent(SecondActivity.this,CreateClassroomActivity.class));
                 closeFabMenu();
             }
         });
