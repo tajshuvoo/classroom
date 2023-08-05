@@ -14,11 +14,17 @@
         android:theme="@style/Theme.Classroom"
         tools:targetApi="31">
         <activity
+            android:name=".JoinClassroomActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ClassroomActivity"
+            android:exported="false" />
+        <activity
             android:name=".CreateClassroomActivity"
             android:theme="@style/AppTheme">
+
             <!-- Other activity attributes -->
         </activity>
-
         <activity
             android:name=".SplashScreenActivity"
             android:exported="true"
