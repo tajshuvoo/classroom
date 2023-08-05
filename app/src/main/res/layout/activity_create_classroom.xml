@@ -5,8 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
     android:background="@android:color/white">
+
 
     <!-- Toolbar -->
 
@@ -23,16 +23,20 @@
         app:title="Create Class"
         app:titleTextColor="@android:color/black" />
 
+
     <EditText
         android:id="@+id/editTextClassName"
         android:layout_width="match_parent"
         android:layout_height="35dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="40dp"
         android:background="@android:color/darker_gray"
         android:hint="Classroom Name (Required)"
         android:inputType="text"
         android:maxLines="1"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
@@ -42,6 +46,8 @@
         android:layout_height="35dp"
         android:layout_marginTop="8dp"
         android:hint="Section"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:inputType="text"
         android:maxLines="1"
         android:background="@android:color/darker_gray"
@@ -54,6 +60,8 @@
         android:layout_marginTop="8dp"
         android:hint="Room"
         android:inputType="text"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:maxLines="1"
         android:background="@android:color/darker_gray"
         app:layout_constraintTop_toBottomOf="@+id/editTextSection" />
@@ -65,6 +73,8 @@
         android:layout_marginTop="8dp"
         android:hint="Subject"
         android:inputType="text"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:maxLines="1"
         android:background="@android:color/darker_gray"
         app:layout_constraintTop_toBottomOf="@+id/editTextRoom" />
