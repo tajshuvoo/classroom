@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -15,6 +16,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RectShape;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -47,7 +51,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SecondActivity extends AppCompatActivity {
+public class SecondActivity extends AppCompatActivity implements ItemClickListener {
 
     GoogleSignInOptions googleSignInOptions;
     GoogleSignInClient googleSignInClient;
@@ -131,8 +135,9 @@ public class SecondActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerViewClassrooms);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+
         classroomList = new ArrayList<>();
-        adapter = new ClassroomAdapter(classroomList);
+        adapter = new ClassroomAdapter(classroomList, this);
         recyclerView.setAdapter(adapter);
 
         SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
@@ -239,6 +244,7 @@ public class SecondActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // Handle Option 1 click
+                startActivity(new Intent(SecondActivity.this,JoinClassroomActivity.class));
                 closeFabMenu();
             }
         });
@@ -283,5 +289,17 @@ public class SecondActivity extends AppCompatActivity {
         isFabExpanded = false;
         fabOption1.hide();
         fabOption2.hide();
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        Classroom clickedClassroom = classroomList.get(position);
+        Toast.makeText(this, clickedClassroom.getClassName(), Toast.LENGTH_SHORT).show();
+
+        // Create an intent to open the ClassroomActivity
+        Intent intent = new Intent(this, ClassroomActivity.class);
+        intent.putExtra("classroomId", clickedClassroom.getClassroomId());
+        // Add more data if needed
+        startActivity(intent);
     }
 }

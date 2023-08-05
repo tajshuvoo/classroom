@@ -8,6 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.classroom.ItemClickListener;
 import com.example.classroom.R;
 import com.example.classroom.model.Classroom;
 import com.google.firebase.database.DataSnapshot;
@@ -21,9 +22,12 @@ import java.util.List;
 public class ClassroomAdapter extends RecyclerView.Adapter<ClassroomAdapter.ClassroomViewHolder> {
 
     private List<Classroom> classroomList;
+    private ItemClickListener itemClickListener;
 
-    public ClassroomAdapter(List<Classroom> classroomList) {
+    public ClassroomAdapter(List<Classroom> classroomList,ItemClickListener itemClickListener) {
+
         this.classroomList = classroomList;
+        this.itemClickListener = itemClickListener;
     }
 
     @NonNull
@@ -54,6 +58,16 @@ public class ClassroomAdapter extends RecyclerView.Adapter<ClassroomAdapter.Clas
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 // Handle the error if needed
+            }
+        });
+
+        //click listener
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (itemClickListener != null) {
+                    itemClickListener.onItemClick(position);
+                }
             }
         });
     }
