@@ -19,7 +19,8 @@
             android:theme="@style/AppTheme"/>
         <activity
             android:name=".ClassroomActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/AppTheme"/>
         <activity
             android:name=".CreateClassroomActivity"
             android:theme="@style/AppTheme">
