@@ -14,31 +14,39 @@
         android:layout_height="?attr/actionBarSize"
         android:layout_marginTop="4dp"
         android:background="@color/white"
+        android:elevation="4dp"
+        app:contentInsetLeft="0dp"
+        app:contentInsetRight="0dp"
+        app:contentInsetStart="0dp"
+        app:contentInsetStartWithNavigation="0dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:elevation="4dp"
         app:navigationIcon="?android:attr/homeAsUpIndicator"
         app:title="dsddssds"
-        app:titleTextColor="@android:color/black"
-        app:contentInsetStartWithNavigation="0dp"
-        app:contentInsetLeft="0dp"
-        app:contentInsetStart="0dp"
-        app:contentInsetRight="0dp">
+        app:titleTextColor="@android:color/black">
 
-        <!-- Three-dot menu -->
         <ImageView
             android:id="@+id/toolbar_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
             android:src="@drawable/baseline_more_vert_24"
             android:contentDescription="@string/menu_description"
+            android:layout_marginEnd="8dp" />
+
+        <ImageView
+            android:id="@+id/toolbar_notification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
-            android:layout_marginEnd="16dp"/>
+            android:src="@drawable/ic_notification_bell"
+            android:layout_marginEnd="16dp" />
+
+
 
     </androidx.appcompat.widget.Toolbar>
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

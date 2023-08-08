@@ -2,14 +2,18 @@ package com.example.classroom;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.classroom.model.Classroom;
@@ -22,7 +26,6 @@ import com.google.firebase.database.ValueEventListener;
 public class ClassroomActivity extends AppCompatActivity {
 
     Classroom classroom;
-    String classroomId;
     String className;
     String section;
     String room;
@@ -81,7 +84,35 @@ public class ClassroomActivity extends AppCompatActivity {
 
 
 
+        ImageView threeDotMenu = findViewById(R.id.toolbar_menu);
+        threeDotMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openMenu(v,classroomId);
+            }
+        });
+
+
     }
+
+    private void openMenu(View v,String classroomId) {
+        PopupMenu popupMenu = new PopupMenu(this, v);
+        popupMenu.getMenu().add(Menu.NONE, Menu.FIRST, Menu.NONE, "Members");
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == Menu.FIRST) {
+                    Intent intent = new Intent(ClassroomActivity.this, MembersActivity.class);
+                    intent.putExtra("classroomId", classroomId);
+                    startActivity(intent);
+                    return true;
+                }
+                return false;
+            }
+        });
+        popupMenu.show();
+    }
+
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
