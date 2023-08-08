@@ -10,6 +10,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
 import android.content.Intent;
@@ -27,10 +28,12 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.bumptech.glide.Glide;
 import com.example.classroom.adapter.ClassroomAdapter;
 import com.example.classroom.model.Classroom;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -79,6 +82,9 @@ public class SecondActivity extends AppCompatActivity implements ItemClickListen
     private DatabaseReference databaseReference;
 
 
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +100,10 @@ public class SecondActivity extends AppCompatActivity implements ItemClickListen
                 decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
             }
         }
+
+        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        String userId = sharedPreferences.getString("userId", null);
+
 
 
 
@@ -128,6 +138,49 @@ public class SecondActivity extends AppCompatActivity implements ItemClickListen
             }
         });
 
+        // Access the NavigationView header views
+        View headerView = navigationView.getHeaderView(0);
+        ImageView profileImageView = headerView.findViewById(R.id.profileImageView);
+        TextView nameTextView = headerView.findViewById(R.id.nameTextView);
+
+
+            if (userId != null) {
+                DatabaseReference userRef = FirebaseDatabase.getInstance("https://classroom-adefd-default-rtdb.asia-southeast1.firebasedatabase.app").getReference()
+                        .child("Users")
+                        .child(userId);
+
+                userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            String userName = dataSnapshot.child("name").getValue(String.class);
+                            String profileImageUrl = dataSnapshot.child("profile").getValue(String.class);
+
+                              Toast.makeText(SecondActivity.this,""+userName,Toast.LENGTH_LONG).show();
+                             // Load the user's profile image using Glide or any other image loading library
+
+                              // Generate a unique key for Glide using the image URL and a timestamp
+                             String uniqueKey = profileImageUrl + "?time=" + System.currentTimeMillis();
+
+                             // Load the image using Glide with the generated unique key
+                            Glide.with(SecondActivity.this)
+                                    .load(uniqueKey)
+                                    .into(profileImageView);
+
+                            // Set the user's name in the navigation header
+                            nameTextView.setText(userName);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        // Handle errors
+                    }
+                });
+            }
+
+
+
 
 
 
@@ -140,71 +193,16 @@ public class SecondActivity extends AppCompatActivity implements ItemClickListen
         adapter = new ClassroomAdapter(classroomList, this);
         recyclerView.setAdapter(adapter);
 
-        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-        String userId = sharedPreferences.getString("userId", null);
 
 
-        if (userId != null) {
-            // Reference to the user's linked_classes node in Firebase
-            DatabaseReference linkedClassesRef = FirebaseDatabase.getInstance("https://classroom-adefd-default-rtdb.asia-southeast1.firebasedatabase.app")
-                    .getReference().child("linked_classes").child(userId).child("classrooms");
-//            Toast.makeText(SecondActivity.this,"hi",Toast.LENGTH_LONG).show();
-            // Fetch the linked classroom IDs for the user
-            linkedClassesRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    classroomList.clear();
+        // Initialize SwipeRefreshLayout
+        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+           fetchDataFromFirebase(userId);
+            swipeRefreshLayout.setRefreshing(false);
+        });
 
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        String classroomId = snapshot.getKey();
-//                        Toast.makeText(SecondActivity.this,classroomId,Toast.LENGTH_LONG).show();
-                        // Reference to the classroom with this ID
-                        DatabaseReference classroomRef = FirebaseDatabase.getInstance("https://classroom-adefd-default-rtdb.asia-southeast1.firebasedatabase.app")
-                                .getReference().child("classrooms").child(classroomId);
-
-                        classroomRef.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                                if(task.isSuccessful()){
-
-                                    if(task.getResult().exists()){
-
-                                        DataSnapshot dataSnapshot =task.getResult();
-                                        String className = dataSnapshot.child("className").getValue(String.class);
-                                        String classroomId = dataSnapshot.child("classroomId").getValue(String.class);
-                                        String room = dataSnapshot.child("room").getValue(String.class);
-                                        String section = dataSnapshot.child("section").getValue(String.class);
-                                        String subject = dataSnapshot.child("subject").getValue(String.class);
-                                        String teacherUid = dataSnapshot.child("teacherUid").getValue(String.class);
-
-
-                                    // Create a new Classroom object with retrieved data
-                                    Classroom classroom = new Classroom(className, classroomId, room, section, subject, teacherUid);
-
-                                    // Add the Classroom object to the list and notify the adapter
-                                    classroomList.add(classroom);
-                                    adapter.notifyDataSetChanged();
-                                    } else {
-                                    // Handle the case where the dataSnapshot does not exist
-                                    Log.e("ClassroomAdapter", "DataSnapshot does not exist");
-                                }
-
-                                }
-                            }
-                        });
-
-
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    // Handle errors
-                }
-            });
-        }
-
-
+        fetchDataFromFirebase(userId);
 
 
         //fab
@@ -252,6 +250,7 @@ public class SecondActivity extends AppCompatActivity implements ItemClickListen
         fabOption2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 startActivity(new Intent(SecondActivity.this,CreateClassroomActivity.class));
                 closeFabMenu();
             }
@@ -291,15 +290,179 @@ public class SecondActivity extends AppCompatActivity implements ItemClickListen
         fabOption2.hide();
     }
 
+    private void fetchDataFromFirebase(String userId) {
+        if (userId != null) {
+            DatabaseReference linkedClassesRef = FirebaseDatabase.getInstance("https://classroom-adefd-default-rtdb.asia-southeast1.firebasedatabase.app")
+                    .getReference().child("linked_classes").child(userId).child("classrooms");
+
+            linkedClassesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    classroomList.clear();
+
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        String classroomId = snapshot.getKey();
+                        DatabaseReference classroomRef = FirebaseDatabase.getInstance("https://classroom-adefd-default-rtdb.asia-southeast1.firebasedatabase.app")
+                                .getReference().child("classrooms").child(classroomId);
+
+                        classroomRef.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    if (task.getResult().exists()) {
+                                        DataSnapshot dataSnapshot = task.getResult();
+                                        String className = dataSnapshot.child("className").getValue(String.class);
+                                        String room = dataSnapshot.child("room").getValue(String.class);
+                                        String section = dataSnapshot.child("section").getValue(String.class);
+                                        String subject = dataSnapshot.child("subject").getValue(String.class);
+                                        String teacherUid = dataSnapshot.child("teacherUid").getValue(String.class);
+
+                                        Classroom classroom = new Classroom(className, classroomId, room, section, subject, teacherUid);
+                                        classroomList.add(classroom);
+
+                                        // Check if all classrooms have been fetched
+                                        if (classroomList.size() == dataSnapshot.getChildrenCount()) {
+                                            // All classrooms have been fetched, so now call the modifyClassroomInformation function
+                                            modifyClassroomInformation(classroomList);
+                                        }
+
+                                        adapter.notifyDataSetChanged();
+                                    } else {
+                                        Log.e("ClassroomAdapter", "DataSnapshot does not exist");
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    // Handle errors
+                }
+            });
+        }
+    }
+private  void modifyClassroomInformation(List<Classroom> classroomList){
+    for (Classroom classroom : classroomList)
+
+    {
+        String classroomId = classroom.getClassroomId();
+        String teacherUid = classroom.getTeacherUid();
+
+        //        classrooms_info
+        DatabaseReference linkedClassesRef = FirebaseDatabase.getInstance("https://classroom-adefd-default-rtdb.asia-southeast1.firebasedatabase.app")
+                .getReference("linked_classes");
+        linkedClassesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                    String userIds = userSnapshot.getKey();
+
+                    if (userSnapshot.child("classrooms").hasChild(classroomId)) {
+                        DatabaseReference classroomMembersRef = FirebaseDatabase.getInstance("https://classroom-adefd-default-rtdb.asia-southeast1.firebasedatabase.app")
+                                .getReference("classrooms_info")
+                                .child(classroomId);
+
+                        if (userIds.equals(teacherUid)) {
+                            classroomMembersRef.child("teachers").child(userIds).setValue(userIds);
+                        } else if (!userIds.equals(teacherUid)) {
+                            classroomMembersRef.child("students").child(userIds).setValue(userIds);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle error
+            }
+        });
+    }
+
+}
+
     @Override
     public void onItemClick(int position) {
         Classroom clickedClassroom = classroomList.get(position);
-        Toast.makeText(this, clickedClassroom.getClassName(), Toast.LENGTH_SHORT).show();
+        String classroomId =clickedClassroom.getClassroomId();
+        String teacherUid =clickedClassroom.getTeacherUid();
 
-        // Create an intent to open the ClassroomActivity
-        Intent intent = new Intent(this, ClassroomActivity.class);
-        intent.putExtra("classroomId", clickedClassroom.getClassroomId());
-        // Add more data if needed
-        startActivity(intent);
+//        classrooms_info
+        DatabaseReference linkedClassesRef = FirebaseDatabase.getInstance("https://classroom-adefd-default-rtdb.asia-southeast1.firebasedatabase.app")
+                .getReference("linked_classes");
+        linkedClassesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                    String userIds = userSnapshot.getKey();
+
+                    if (userSnapshot.child("classrooms").hasChild(classroomId)) {
+                        DatabaseReference classroomMembersRef = FirebaseDatabase.getInstance("https://classroom-adefd-default-rtdb.asia-southeast1.firebasedatabase.app")
+                                .getReference("classrooms_info")
+                                .child(classroomId);
+
+                        if (userIds.equals(teacherUid)) {
+                            classroomMembersRef.child("teachers").child(userIds).setValue(userIds);
+                        } else if(!userIds.equals(teacherUid)){
+                            classroomMembersRef.child("students").child(userIds).setValue(userIds);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle error
+            }
+        });
+
+
+        //teachers list
+        List<Users> teachersList = new ArrayList<>();
+//        Boolean isTeacher = false;
+        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        String userId = sharedPreferences.getString("userId", null);
+        DatabaseReference classroomRef = FirebaseDatabase.getInstance("https://classroom-adefd-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("classrooms_info")
+                .child(classroomId);
+
+        DatabaseReference usersRef = FirebaseDatabase.getInstance("https://classroom-adefd-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("Users");
+
+        classroomRef.child("teachers").get().addOnSuccessListener(teachersSnapshot -> {
+            if (teachersSnapshot.exists()) {
+                for (DataSnapshot teacherSnapshot : teachersSnapshot.getChildren()) {
+                    String teacherId = teacherSnapshot.getValue(String.class);
+
+                    // Fetch teacher's data from Users node
+                    usersRef.child(teacherId).get()
+                            .addOnSuccessListener(teacherUserSnapshot -> {
+                                if (teacherUserSnapshot.exists()) {
+                                    Users teacher = teacherUserSnapshot.getValue(Users.class);
+                                    teachersList.add(teacher);
+                                }
+
+                                // Check if the user is a teacher after populating the list
+                                boolean isTeacher = false;
+                                for (Users user : teachersList) {
+                                    if (user.getUserId().equals(userId)) {
+                                        isTeacher = true;
+                                        break;
+                                    }
+                                }
+
+                                // Start the appropriate activity based on whether the user is a teacher
+                                if (isTeacher) {
+                                    Intent intent = new Intent(this, TeachersClassroomActivity.class);
+                                    intent.putExtra("classroomId", classroomId);
+                                    startActivity(intent);
+                                } else {
+                                    Intent intent = new Intent(this, ClassroomActivity.class);
+                                    intent.putExtra("classroomId", classroomId);
+                                    startActivity(intent);
+                                }
+                            });
+                }
+            }
+        });
     }
 }
