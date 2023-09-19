@@ -92,6 +92,18 @@ public class ClassroomActivity extends AppCompatActivity {
             }
         });
 
+        ImageView notification = findViewById(R.id.toolbar_notification);
+
+        notification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent =new Intent(ClassroomActivity.this,Notices.class);
+                intent.putExtra("classroomId", classroomId);
+                startActivity(intent);
+
+            }
+        });
+
 
     }
 
