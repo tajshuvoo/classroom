@@ -6,6 +6,8 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
@@ -17,6 +19,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.classroom.model.Classroom;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,10 +35,16 @@ public class TeachersClassroomActivity extends AppCompatActivity {
     String room;
     String subject;
     String teacherUid;
+
+
+    //fab
+    private boolean isFabExpanded = false;
+    private FloatingActionButton fabMain;
+    private ExtendedFloatingActionButton fabOption1, fabOption2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_classroom);
+        setContentView(R.layout.activity_teachers_classroom);
 
         //status bar color
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -92,7 +102,75 @@ public class TeachersClassroomActivity extends AppCompatActivity {
             }
         });
 
+        ImageView notification = findViewById(R.id.toolbar_notification);
 
+        notification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent =new Intent(TeachersClassroomActivity.this,Notices.class);
+                intent.putExtra("classroomId", classroomId);
+                startActivity(intent);
+
+            }
+        });
+
+        //fab
+        fabMain = findViewById(R.id.fabTeacher);
+        fabOption1 = findViewById(R.id.fabTeacher1);
+        fabOption2 = findViewById(R.id.fabTeacher2);
+        fabMain.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
+        fabOption1.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
+        fabOption2.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
+
+        //fab
+        fabMain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isFabExpanded) {
+                    closeFabMenu();
+                } else {
+                    openFabMenu();
+                }
+            }
+        });
+
+        fabOption1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                // Handle Option 1 click
+//                startActivity(new Intent(SecondActivity.this,JoinClassroomActivity.class));
+                closeFabMenu();
+            }
+        });
+
+        fabOption2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent =new Intent(TeachersClassroomActivity.this,SendNoticeActivity.class);
+                intent.putExtra("classroomId", classroomId);
+                startActivity(intent);
+                closeFabMenu();
+            }
+        });
+
+
+        //fab done
+
+    }
+
+
+    //fab
+    private void openFabMenu() {
+        isFabExpanded = true;
+        fabOption1.show();
+        fabOption2.show();
+    }
+
+    private void closeFabMenu() {
+        isFabExpanded = false;
+        fabOption1.hide();
+        fabOption2.hide();
     }
 
     private void openMenu(View v,String classroomId) {

@@ -59,8 +59,6 @@ public class SecondActivity extends AppCompatActivity implements ItemClickListen
     GoogleSignInOptions googleSignInOptions;
     GoogleSignInClient googleSignInClient;
 
-    TextView name,email;
-    Button signOut;
 
 
 
@@ -79,7 +77,6 @@ public class SecondActivity extends AppCompatActivity implements ItemClickListen
     private ClassroomAdapter adapter;
     private List<Classroom> classroomList;
 
-    private DatabaseReference databaseReference;
 
 
 
@@ -343,7 +340,7 @@ public class SecondActivity extends AppCompatActivity implements ItemClickListen
             });
         }
     }
-private  void modifyClassroomInformation(List<Classroom> classroomList){
+private  void modifyClassroomInformation(@NonNull List<Classroom> classroomList){
     for (Classroom classroom : classroomList)
 
     {
