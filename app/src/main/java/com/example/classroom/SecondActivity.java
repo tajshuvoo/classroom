@@ -121,10 +121,10 @@ public class SecondActivity extends AppCompatActivity implements ItemClickListen
                 int itemId = item.getItemId();
                 if (itemId == R.id.menu_profile) {
                     // Handle Profile click (e.g., open ProfileActivity)
-                    // startActivity(new Intent(SecondActivity.this, ProfileActivity.class));
+                     startActivity(new Intent(SecondActivity.this, ProfileDetails.class));
                 } else if (itemId == R.id.menu_settings) {
-                    // Handle Settings click (e.g., open SettingsActivity)
-                    // startActivity(new Intent(SecondActivity.this, SettingsActivity.class));
+//                     Handle Settings click (e.g., open SettingsActivity)
+                     startActivity(new Intent(SecondActivity.this, SettingDetails.class));
                 } else if (itemId == R.id.menu_sign_out) {
                     // Handle Sign Out click
                   signOUT();

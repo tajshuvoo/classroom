@@ -3,9 +3,11 @@ package com.example.classroom;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -136,7 +138,31 @@ public class SendNoticeActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         String userId = sharedPreferences.getString("userId", null);
         for (Uri uri : selectedFileUris) {
-            String filename = System.currentTimeMillis() + "_" + uri.getLastPathSegment();
+           // String filename = System.currentTimeMillis() + "_" + uri.getLastPathSegment();
+            String filename;
+            if (uri.getScheme().equals("content")) {
+                try (Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
+                    if (cursor != null && cursor.moveToFirst()) {
+                        int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                        if (nameIndex != -1) {
+                            filename = cursor.getString(nameIndex);
+                        } else {
+                            // Fallback to the last segment of the URI if display name is not available
+                            filename = uri.getLastPathSegment();
+                        }
+                    } else {
+                        // Fallback to the last segment of the URI if cursor is null or empty
+                        filename = uri.getLastPathSegment();
+                    }
+                } catch (Exception e) {
+                    // Fallback to the last segment of the URI in case of an exception
+                    filename = uri.getLastPathSegment();
+                }
+            } else {
+                // For file URIs, simply use the last path segment
+                filename = uri.getLastPathSegment();
+            }
+
             StorageReference storageRef = storage.getReference().child("classrooms").child(classroomId).child(userId).child("notice_files").child(filename);
 
             UploadTask uploadTask = storageRef.putFile(uri);

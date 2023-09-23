@@ -1,23 +1,24 @@
 package com.example.classroom;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.appcompat.widget.Toolbar;
-
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.Toast;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.example.classroom.model.Classroom;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -26,8 +27,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import java.util.ArrayList;
+import java.util.List;
 
-public class TeachersClassroomActivity extends AppCompatActivity {
+public class TeachersClassroomActivity extends AppCompatActivity implements ChapterAdapter.OnItemClickListener {
 
     Classroom classroom;
     String className;
@@ -36,17 +39,20 @@ public class TeachersClassroomActivity extends AppCompatActivity {
     String subject;
     String teacherUid;
 
-
-    //fab
     private boolean isFabExpanded = false;
     private FloatingActionButton fabMain;
     private ExtendedFloatingActionButton fabOption1, fabOption2;
+
+    private RecyclerView recyclerView;
+    private ChapterAdapter chapterAdapter;
+    private List<ChapterItem> chapterList = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_teachers_classroom);
 
-        //status bar color
+        // Status bar color
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -56,7 +62,6 @@ public class TeachersClassroomActivity extends AppCompatActivity {
                 decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
             }
         }
-
 
         Intent intent = getIntent();
         String classroomId = intent.getStringExtra("classroomId");
@@ -69,12 +74,11 @@ public class TeachersClassroomActivity extends AppCompatActivity {
                 if (dataSnapshot.exists()) {
                     classroom = dataSnapshot.getValue(Classroom.class);
 
-                    // Access classroom properties and update the UI here
                     className = classroom.getClassName();
                     section = classroom.getSection();
                     room = classroom.getRoom();
-                    subject=classroom.getSubject();
-                    teacherUid=classroom.getTeacherUid();
+                    subject = classroom.getSubject();
+                    teacherUid = classroom.getTeacherUid();
 
                     // Toolbar setup
                     Toolbar toolbar = findViewById(R.id.toolbar1);
@@ -92,13 +96,11 @@ public class TeachersClassroomActivity extends AppCompatActivity {
             }
         });
 
-
-
         ImageView threeDotMenu = findViewById(R.id.toolbar_menu);
         threeDotMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openMenu(v,classroomId);
+                openMenu(v, classroomId);
             }
         });
 
@@ -107,14 +109,17 @@ public class TeachersClassroomActivity extends AppCompatActivity {
         notification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent =new Intent(TeachersClassroomActivity.this,Notices.class);
+                Intent intent = new Intent(TeachersClassroomActivity.this, Notices.class);
                 intent.putExtra("classroomId", classroomId);
                 startActivity(intent);
-
             }
         });
 
-        //fab
+        // Initialize the RecyclerView
+        recyclerView = findViewById(R.id.recyclerViewClassrooms);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        // Initialize the FAB buttons
         fabMain = findViewById(R.id.fabTeacher);
         fabOption1 = findViewById(R.id.fabTeacher1);
         fabOption2 = findViewById(R.id.fabTeacher2);
@@ -122,7 +127,7 @@ public class TeachersClassroomActivity extends AppCompatActivity {
         fabOption1.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
         fabOption2.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
 
-        //fab
+        // Set FAB click listeners
         fabMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -137,8 +142,9 @@ public class TeachersClassroomActivity extends AppCompatActivity {
         fabOption1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                // Handle Option 1 click
-//                startActivity(new Intent(SecondActivity.this,JoinClassroomActivity.class));
+                Intent intent = new Intent(TeachersClassroomActivity.this, ChapterCreatorActivity.class);
+                intent.putExtra("classroomId", classroomId);
+                startActivity(intent);
                 closeFabMenu();
             }
         });
@@ -146,21 +152,52 @@ public class TeachersClassroomActivity extends AppCompatActivity {
         fabOption2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                Intent intent =new Intent(TeachersClassroomActivity.this,SendNoticeActivity.class);
+                Intent intent = new Intent(TeachersClassroomActivity.this, SendNoticeActivity.class);
                 intent.putExtra("classroomId", classroomId);
                 startActivity(intent);
                 closeFabMenu();
             }
         });
 
+        // Fetch chapters from Firebase and populate the RecyclerView
+        DatabaseReference chaptersRef = FirebaseDatabase.getInstance("https://classroom-adefd-default-rtdb.asia-southeast1.firebasedatabase.app")
+                .getReference()
+                .child("classrooms_info")
+                .child(classroomId)
+                .child("chapters");
 
-        //fab done
+        chaptersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                chapterList.clear();
+                for (DataSnapshot chapterSnapshot : dataSnapshot.getChildren()) {
+                    // Assuming chapterSnapshot.getKey() is the chapter number
+                    String chapterNum = chapterSnapshot.getKey();
 
+                    // Get the chapter name under this chapter number
+                    String chapterName = chapterSnapshot.child("chapterName").getValue(String.class);
+
+
+                    Log.d("ChapterData", "Chapter Num: " + chapterNum + ", Chapter Name: " + chapterName);
+                    // Create a ChapterItem and add it to the list
+                    ChapterItem chapter = new ChapterItem(chapterNum, chapterName);
+                    chapterList.add(chapter);
+                }
+                chapterAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle errors
+            }
+        });
+
+
+        // Initialize and set the adapter for the RecyclerView
+        chapterAdapter = new ChapterAdapter(chapterList , this); // Pass 'this' as the listener
+        recyclerView.setAdapter(chapterAdapter);
     }
 
-
-    //fab
     private void openFabMenu() {
         isFabExpanded = true;
         fabOption1.show();
@@ -173,7 +210,7 @@ public class TeachersClassroomActivity extends AppCompatActivity {
         fabOption2.hide();
     }
 
-    private void openMenu(View v,String classroomId) {
+    private void openMenu(View v, String classroomId) {
         PopupMenu popupMenu = new PopupMenu(this, v);
         popupMenu.getMenu().add(Menu.NONE, Menu.FIRST, Menu.NONE, "Members");
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -191,6 +228,21 @@ public class TeachersClassroomActivity extends AppCompatActivity {
         popupMenu.show();
     }
 
+    @Override
+    public void onItemClick(int position) {
+        // Get the clicked chapter item
+        ChapterItem clickedChapter = chapterList.get(position);
+
+        // Create an Intent to start TeachersChapterActivity
+        Intent intent = new Intent(TeachersClassroomActivity.this, TeachersChapterActivity.class);
+
+        // Pass relevant data to the next activity, for example, chapter number and name
+        intent.putExtra("chapterNum", clickedChapter.getChapterNum());
+        intent.putExtra("chapterName", clickedChapter.getChapterName());
+
+        // Start the activity
+        startActivity(intent);
+    }
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
