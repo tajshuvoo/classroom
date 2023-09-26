@@ -5,12 +5,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    tools:context=".MaterialsActivity">
 
     <!-- Toolbar -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar1"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:layout_marginTop="4dp"
         android:background="@color/white"
@@ -24,44 +24,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="?android:attr/homeAsUpIndicator"
-        app:title="dsddssds"
+        app:title="Materials"
         app:titleTextColor="@android:color/black">
-
-        <ImageView
-            android:id="@+id/toolbar_menu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:src="@drawable/baseline_more_vert_24"
-            android:contentDescription="@string/menu_description"
-            android:layout_marginEnd="8dp" />
-
-        <ImageView
-            android:id="@+id/toolbar_notification"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:src="@drawable/ic_notification_bell"
-            android:layout_marginEnd="16dp" />
-
     </androidx.appcompat.widget.Toolbar>
 
+    <!-- RecyclerView to display materials -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewClassrooms"
+        android:id="@+id/recyclerViewMaterials"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="56dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="60dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:listitem="@layout/item_chapter"/>
-
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/barrier"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom" />
+        tools:listitem="@layout/material_list_item" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

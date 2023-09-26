@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:background="@android:color/white">
+    tools:context=".UnitDetailActivity">
 
-    <!-- Toolbar -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar1"
         android:layout_width="fill_parent"
@@ -23,31 +22,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="?android:attr/homeAsUpIndicator"
-        app:title="Chapter Name"
+        app:title="dsddssds"
         app:titleTextColor="@android:color/black">
     </androidx.appcompat.widget.Toolbar>
 
-    <!-- Add this field above RecyclerView -->
-    <TextView
-        android:id="@+id/textViewMaterials"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:text="Materials"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:clickable="true"
-        android:visibility="gone"
-        android:background="?android:attr/selectableItemBackground"
-        app:layout_constraintTop_toBottomOf="@id/toolbar1"
-        app:layout_constraintBottom_toTopOf="@+id/recyclerViewUnit"/>
-
-    <!-- RecyclerView for Units -->
-
-    <!-- Barrier for FAB buttons -->
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewUnit"
+        android:id="@+id/recyclerViewMaterials"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="56dp"
@@ -57,18 +38,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0"
-        tools:listitem="@layout/item_unit" />
+        tools:listitem="@layout/material_list_item" />
 
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrier"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="bottom"
-        app:constraint_referenced_ids="fabChapter,fabCreateUnit,fabPostMaterial" />
+        app:constraint_referenced_ids="fab,addMaterial" />
 
-    <!-- FAB Button for Chapter Actions -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabChapter"
+        android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -81,29 +61,17 @@
 
     <!-- FAB Button for Creating Units -->
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fabCreateUnit"
+        android:id="@+id/addMaterial"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@id/fabChapter"
-        android:layout_alignBottom="@id/fabChapter"
+        android:layout_alignEnd="@id/fab"
+        android:layout_alignBottom="@id/fab"
         android:layout_margin="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
         android:text="Materials+"
-        app:layout_constraintBottom_toTopOf="@+id/fabPostMaterial"
+        app:layout_constraintBottom_toTopOf="@+id/fab"
         app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="gone" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
-    <!-- FAB Button for Posting Materials -->
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fabPostMaterial"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@id/fabChapter"
-        android:layout_alignBottom="@id/fabChapter"
-        android:layout_margin="16dp"
-        android:layout_marginBottom="20dp"
-        android:text="Create Unit"
-        app:layout_constraintBottom_toTopOf="@+id/fabChapter"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="gone" />
 </androidx.constraintlayout.widget.ConstraintLayout>

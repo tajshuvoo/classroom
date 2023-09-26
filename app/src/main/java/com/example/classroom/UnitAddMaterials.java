@@ -1,5 +1,9 @@
 package com.example.classroom;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,11 +22,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -32,8 +31,7 @@ import com.google.firebase.storage.UploadTask;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PostMaterials extends AppCompatActivity {
-
+public class UnitAddMaterials extends AppCompatActivity {
     private EditText materialsDescriptionEditText;
     private ImageView attachFileButton;
     private Button postMaterialsButton;
@@ -45,7 +43,7 @@ public class PostMaterials extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_post_materials);
+        setContentView(R.layout.activity_unit_add_materials);
 
         storage = FirebaseStorage.getInstance();
 
@@ -71,7 +69,7 @@ public class PostMaterials extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle("Post Materials");
+        getSupportActionBar().setTitle("Add materials");
 
         attachFileButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -165,6 +163,7 @@ public class PostMaterials extends AppCompatActivity {
         Intent intent = getIntent();
         String classroomId = intent.getStringExtra("classroomId");
         String chapterNum = intent.getStringExtra("chapterNum");
+        String unitNum = intent.getStringExtra("unitNum");
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance("https://classroom-adefd-default-rtdb.asia-southeast1.firebasedatabase.app").getReference();
         DatabaseReference materialsRef = databaseReference
@@ -172,6 +171,8 @@ public class PostMaterials extends AppCompatActivity {
                 .child(classroomId)
                 .child("chapters")
                 .child(String.valueOf(chapterNum))
+                .child("units")
+                .child(unitNum)
                 .child("materials");
 
         // Create a Materials object with description and file URLs
@@ -184,7 +185,6 @@ public class PostMaterials extends AppCompatActivity {
 
         finish();
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -215,10 +215,11 @@ public class PostMaterials extends AppCompatActivity {
     }
 
     private static final int PICK_FILE_REQUEST_CODE = 123;
-
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
     }
+
+
 }

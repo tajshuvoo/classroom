@@ -9,12 +9,12 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
-public class UnitDetails extends AppCompatActivity {
+public class AddTeacherActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_unit_details);
+        setContentView(R.layout.activity_add_teacher);
         // Status bar color
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
@@ -32,7 +32,7 @@ public class UnitDetails extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle("Profiles");
+        getSupportActionBar().setTitle("Add teacher");
     }
     @Override
     public boolean onSupportNavigateUp() {

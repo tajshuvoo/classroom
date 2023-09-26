@@ -39,6 +39,8 @@ public class TeachersClassroomActivity extends AppCompatActivity implements Chap
     String subject;
     String teacherUid;
 
+    String classroomId;
+
     private boolean isFabExpanded = false;
     private FloatingActionButton fabMain;
     private ExtendedFloatingActionButton fabOption1, fabOption2;
@@ -64,7 +66,7 @@ public class TeachersClassroomActivity extends AppCompatActivity implements Chap
         }
 
         Intent intent = getIntent();
-        String classroomId = intent.getStringExtra("classroomId");
+        classroomId = intent.getStringExtra("classroomId");
 
         DatabaseReference classroomRef = FirebaseDatabase.getInstance("https://classroom-adefd-default-rtdb.asia-southeast1.firebasedatabase.app")
                 .getReference().child("classrooms").child(classroomId);
@@ -212,21 +214,49 @@ public class TeachersClassroomActivity extends AppCompatActivity implements Chap
 
     private void openMenu(View v, String classroomId) {
         PopupMenu popupMenu = new PopupMenu(this, v);
-        popupMenu.getMenu().add(Menu.NONE, Menu.FIRST, Menu.NONE, "Members");
+
+        // Add "Classroom Info" option
+        popupMenu.getMenu().add(Menu.NONE, 1, Menu.NONE, "Classroom Info");
+
+        // Add "Members" option
+        popupMenu.getMenu().add(Menu.NONE, 2, Menu.NONE, "Members");
+
+        // Add "Add Teacher" option
+        popupMenu.getMenu().add(Menu.NONE, 3, Menu.NONE, "Add Teacher");
+
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId() == Menu.FIRST) {
-                    Intent intent = new Intent(TeachersClassroomActivity.this, MembersActivity.class);
-                    intent.putExtra("classroomId", classroomId);
-                    startActivity(intent);
-                    return true;
+                switch (item.getItemId()) {
+                    case 1: // Classroom Info
+                        // Open the Classroom Info activity with the classroomId
+                        Intent infoIntent = new Intent(TeachersClassroomActivity.this, classroomInfo.class);
+                        infoIntent.putExtra("classroomId", classroomId);
+                        startActivity(infoIntent);
+                        return true;
+
+                    case 2: // Members
+                        // Open the Members activity with the classroomId
+                        Intent membersIntent = new Intent(TeachersClassroomActivity.this, MembersActivity.class);
+                        membersIntent.putExtra("classroomId", classroomId);
+                        startActivity(membersIntent);
+                        return true;
+
+                    case 3:
+                        Intent addTeacherIntent = new Intent(TeachersClassroomActivity.this, AddTeacherActivity.class);
+                        addTeacherIntent.putExtra("classroomId", classroomId);
+                        startActivity(addTeacherIntent);
+                        return true;
+
+                    default:
+                        return false;
                 }
-                return false;
             }
         });
+
         popupMenu.show();
     }
+
 
     @Override
     public void onItemClick(int position) {
@@ -237,6 +267,7 @@ public class TeachersClassroomActivity extends AppCompatActivity implements Chap
         Intent intent = new Intent(TeachersClassroomActivity.this, TeachersChapterActivity.class);
 
         // Pass relevant data to the next activity, for example, chapter number and name
+        intent.putExtra("classroomId", classroomId);
         intent.putExtra("chapterNum", clickedChapter.getChapterNum());
         intent.putExtra("chapterName", clickedChapter.getChapterName());
 

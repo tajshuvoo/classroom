@@ -1,0 +1,33 @@
+<!-- item_unit.xml -->
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardElevation="12dp"
+    app:cardCornerRadius="15dp"
+    android:layout_margin="5dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/textViewUnitNum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Unit !"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/textViewUnitName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Unit Name"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/black" />
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
