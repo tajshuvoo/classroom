@@ -23,30 +23,31 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="?android:attr/homeAsUpIndicator"
-        app:title="dsddssds"
+        app:title="Chapter Name"
         app:titleTextColor="@android:color/black">
-
-        <ImageView
-            android:id="@+id/toolbar_menu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:src="@drawable/baseline_more_vert_24"
-            android:contentDescription="@string/menu_description"
-            android:layout_marginEnd="8dp" />
-
-        <ImageView
-            android:id="@+id/toolbar_notification"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:src="@drawable/ic_notification_bell"
-            android:layout_marginEnd="16dp" />
-
     </androidx.appcompat.widget.Toolbar>
 
+    <!-- Add this field above RecyclerView -->
+    <TextView
+        android:id="@+id/textViewMaterials"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:text="Materials"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:clickable="true"
+        android:visibility="gone"
+        android:background="?android:attr/selectableItemBackground"
+        app:layout_constraintTop_toBottomOf="@id/toolbar1"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerViewUnit"/>
+
+    <!-- RecyclerView for Units -->
+
+    <!-- Barrier for FAB buttons -->
+
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewClassrooms"
+        android:id="@+id/recyclerViewUnit"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="56dp"
@@ -55,17 +56,19 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:listitem="@layout/item_chapter"/>
+        app:layout_constraintVertical_bias="1.0"
+        tools:listitem="@layout/item_unit" />
 
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrier"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="bottom"
-        app:constraint_referenced_ids="fabTeacher,fabTeacher1,fabTeacher2" />
+        app:constraint_referenced_ids="fabChapter,fabCreateUnit,fabPostMaterial" />
 
+    <!-- FAB Button for Chapter Actions -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabTeacher"
+        android:id="@+id/fabChapter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -76,33 +79,31 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/sharp_add_plus" />
 
+    <!-- FAB Button for Creating Units -->
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fabTeacher1"
+        android:id="@+id/fabCreateUnit"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@id/fabTeacher"
-        android:layout_alignBottom="@id/fabTeacher"
+        android:layout_alignEnd="@id/fabChapter"
+        android:layout_alignBottom="@id/fabChapter"
         android:layout_margin="16dp"
         android:layout_marginBottom="16dp"
-        android:text="Add Chapter"
-        app:layout_constraintBottom_toTopOf="@+id/fabTeacher2"
+        android:text="Materials+"
+        app:layout_constraintBottom_toTopOf="@+id/fabPostMaterial"
         app:layout_constraintEnd_toEndOf="parent"
         android:visibility="gone" />
 
+    <!-- FAB Button for Posting Materials -->
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fabTeacher2"
+        android:id="@+id/fabPostMaterial"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@id/fabTeacher"
-        android:layout_alignBottom="@id/fabTeacher"
+        android:layout_alignEnd="@id/fabChapter"
+        android:layout_alignBottom="@id/fabChapter"
         android:layout_margin="16dp"
         android:layout_marginBottom="20dp"
-        android:text="send notice"
-        app:layout_constraintBottom_toTopOf="@+id/fabTeacher"
+        android:text="Create Unit"
+        app:layout_constraintBottom_toTopOf="@+id/fabChapter"
         app:layout_constraintEnd_toEndOf="parent"
         android:visibility="gone" />
-
-
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

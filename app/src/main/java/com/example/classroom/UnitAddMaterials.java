@@ -1,5 +1,9 @@
 package com.example.classroom;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,30 +22,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
-import com.example.classroom.model.Classroom;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class SendNoticeActivity extends AppCompatActivity {
-
-    private EditText noticeDescriptionEditText;
+public class UnitAddMaterials extends AppCompatActivity {
+    private EditText materialsDescriptionEditText;
     private ImageView attachFileButton;
-    private Button sendNoticeButton;
+    private Button postMaterialsButton;
     private TextView selectedFilesTextView;
 
     private FirebaseStorage storage;
@@ -50,16 +43,16 @@ public class SendNoticeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_send_notice);
+        setContentView(R.layout.activity_unit_add_materials);
 
         storage = FirebaseStorage.getInstance();
 
-        noticeDescriptionEditText = findViewById(R.id.noticeDescriptionEditText);
+        materialsDescriptionEditText = findViewById(R.id.materialsDescriptionEditText);
         attachFileButton = findViewById(R.id.attachFileButton);
-        sendNoticeButton = findViewById(R.id.sendNoticeButton);
+        postMaterialsButton = findViewById(R.id.postMaterialsButton);
         selectedFilesTextView = findViewById(R.id.selectedFilesTextView);
 
-        //status bar color
+        // Status bar color
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -70,18 +63,13 @@ public class SendNoticeActivity extends AppCompatActivity {
             }
         }
 
-
-
-
         // Toolbar setup
         Toolbar toolbar = findViewById(R.id.toolbar1);
         toolbar.setContentInsetsAbsolute(0, 0);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle("Send Notice");
-
-
+        getSupportActionBar().setTitle("Add materials");
 
         attachFileButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,20 +78,13 @@ public class SendNoticeActivity extends AppCompatActivity {
             }
         });
 
-        sendNoticeButton.setOnClickListener(new View.OnClickListener() {
+        postMaterialsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendNotice();
+                postMaterials();
             }
         });
     }
-
-//    private void openFilePicker() {
-//        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//        intent.setType("*/*");
-//        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true); // Allow multiple file selection
-//        startActivityForResult(intent, PICK_FILE_REQUEST_CODE);
-//    }
 
     private void openFilePicker() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -113,8 +94,8 @@ public class SendNoticeActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent, "Select Files"), PICK_FILE_REQUEST_CODE);
     }
 
-    private void sendNotice() {
-        String description = noticeDescriptionEditText.getText().toString();
+    private void postMaterials() {
+        String description = materialsDescriptionEditText.getText().toString();
         if (TextUtils.isEmpty(description.trim())) {
             Toast.makeText(this, "Please enter a valid description", Toast.LENGTH_SHORT).show();
             return;
@@ -122,23 +103,21 @@ public class SendNoticeActivity extends AppCompatActivity {
 
         if (selectedFileUris.isEmpty()) {
             // No files selected
-            uploadNotice(description, null);
+            uploadMaterials(description, null);
         } else {
             // Upload selected files to Firebase Storage
             uploadFiles(description);
         }
-
     }
 
     private void uploadFiles(final String description) {
         // Upload each selected file and get the download URLs
         ArrayList<String> fileUrls = new ArrayList<>();
-        // Get the classroom ID from the previous intent
         String classroomId = getIntent().getStringExtra("classroomId");
         SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         String userId = sharedPreferences.getString("userId", null);
+        int chapterNum = getIntent().getIntExtra("chapterNum", -1); // Replace with the actual method of getting chapter number
         for (Uri uri : selectedFileUris) {
-           // String filename = System.currentTimeMillis() + "_" + uri.getLastPathSegment();
             String filename;
             if (uri.getScheme().equals("content")) {
                 try (Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
@@ -147,23 +126,24 @@ public class SendNoticeActivity extends AppCompatActivity {
                         if (nameIndex != -1) {
                             filename = cursor.getString(nameIndex);
                         } else {
-                            // Fallback to the last segment of the URI if display name is not available
                             filename = uri.getLastPathSegment();
                         }
                     } else {
-                        // Fallback to the last segment of the URI if cursor is null or empty
                         filename = uri.getLastPathSegment();
                     }
                 } catch (Exception e) {
-                    // Fallback to the last segment of the URI in case of an exception
                     filename = uri.getLastPathSegment();
                 }
             } else {
-                // For file URIs, simply use the last path segment
                 filename = uri.getLastPathSegment();
             }
 
-            StorageReference storageRef = storage.getReference().child("classrooms").child(classroomId).child(userId).child("notice_files").child(filename);
+            StorageReference storageRef = storage.getReference()
+                    .child("classrooms")
+                    .child(classroomId)
+                    .child(userId)
+                    .child("materials")
+                    .child(filename);
 
             UploadTask uploadTask = storageRef.putFile(uri);
             uploadTask.addOnSuccessListener(taskSnapshot -> {
@@ -171,50 +151,40 @@ public class SendNoticeActivity extends AppCompatActivity {
                     String fileUrl = downloadUri.toString();
                     fileUrls.add(fileUrl);
 
-                    // Check if all files have been uploaded
                     if (fileUrls.size() == selectedFileUris.size()) {
-                        uploadNotice(description, fileUrls);
+                        uploadMaterials(description, fileUrls);
                     }
                 });
             });
         }
     }
 
-    private void uploadNotice(String description, ArrayList<String> fileUrls) {
-        // Create a Notice object with description and file URLs
-        Notice notice = new Notice(description, fileUrls);
+    private void uploadMaterials(String description, ArrayList<String> fileUrls) {
+        Intent intent = getIntent();
+        String classroomId = intent.getStringExtra("classroomId");
+        String chapterNum = intent.getStringExtra("chapterNum");
+        String unitNum = intent.getStringExtra("unitNum");
 
-        // Get the classroom ID from the previous intent
-        String classroomId = getIntent().getStringExtra("classroomId");
-
-        // Get a reference to the database
         DatabaseReference databaseReference = FirebaseDatabase.getInstance("https://classroom-adefd-default-rtdb.asia-southeast1.firebasedatabase.app").getReference();
+        DatabaseReference materialsRef = databaseReference
+                .child("classrooms_info")
+                .child(classroomId)
+                .child("chapters")
+                .child(String.valueOf(chapterNum))
+                .child("units")
+                .child(unitNum)
+                .child("materials");
 
-        // Push the notice to the notices array under the classroom node
-        databaseReference.child("classrooms_info").child(classroomId)
-                .child("notices").push().setValue(notice);
+        // Create a Materials object with description and file URLs
+        Materials materials = new Materials(description, fileUrls);
 
-        // Notify user that the notice has been sent
-        Toast.makeText(this, "Notice sent successfully", Toast.LENGTH_SHORT).show();
+        // Push the materials to the materials node
+        materialsRef.push().setValue(materials);
 
-        // Finish the activity
+        Toast.makeText(this, "Materials posted successfully", Toast.LENGTH_SHORT).show();
+
         finish();
     }
-
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (requestCode == PICK_FILE_REQUEST_CODE && resultCode == RESULT_OK) {
-//            if (data != null && data.getClipData() != null) {
-//                int count = data.getClipData().getItemCount();
-//                for (int i = 0; i < count; i++) {
-//                    Uri uri = data.getClipData().getItemAt(i).getUri();
-//                    selectedFileUris.add(uri);
-//                }
-//                updateSelectedFilesTextView();
-//            }
-//        }
-//    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -235,7 +205,6 @@ public class SendNoticeActivity extends AppCompatActivity {
         }
     }
 
-
     private void updateSelectedFilesTextView() {
         int selectedFileCount = selectedFileUris.size();
         if (selectedFileCount > 0) {
@@ -251,4 +220,6 @@ public class SendNoticeActivity extends AppCompatActivity {
         onBackPressed();
         return true;
     }
+
+
 }

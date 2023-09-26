@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -14,8 +16,65 @@
         android:theme="@style/Theme.Classroom"
         tools:targetApi="31">
         <activity
+            android:name=".StudentunitDetails"
+            android:exported="false"
+            android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".ChapterActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".AddTeacherActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".UnitAddMaterials"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".DetailedMaterial"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".MaterialsActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".UnitDetailActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme.SecondActivity" />
+        <activity
+            android:name=".SettingDetails"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".ProfileDetails"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".classroomInfo"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".AddUnit"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".PostMaterials"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".TeachersChapterActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme.SecondActivity" />
+        <activity
+            android:name=".ChapterCreatorActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
+        <activity
             android:name=".DetailedNotice"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".Notices"
             android:exported="false"

@@ -22,10 +22,9 @@ import android.webkit.MimeTypeMap;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
 import java.util.ArrayList;
 
-public class DetailedNotice extends AppCompatActivity {
+public class DetailedMaterial extends AppCompatActivity {
 
     private TextView descriptionTextView;
     private RecyclerView recyclerView;
@@ -36,7 +35,7 @@ public class DetailedNotice extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detailed_notice);
+        setContentView(R.layout.activity_detailed_material);
 
         // Receive the string
         description = getIntent().getStringExtra("description");
@@ -76,7 +75,7 @@ public class DetailedNotice extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle("Notification");
+        getSupportActionBar().setTitle("Material Details");
     }
 
     // Adapter for displaying file list
@@ -147,50 +146,6 @@ public class DetailedNotice extends AppCompatActivity {
         }
     }
 
-//    // Method to open a file using an appropriate app
-//    private void openFile(String fileUrl, String fileName) {
-//        try {
-//            Intent intent = new Intent(Intent.ACTION_VIEW);
-//            intent.setDataAndType(Uri.parse(fileUrl), "application/*");
-//            startActivity(intent);
-//        } catch (ActivityNotFoundException e) {
-//            Toast.makeText(this, "No app found to open this file", Toast.LENGTH_SHORT).show();
-//        }
-//    }
-//
-//
-//
-//
-//    // Helper method to map file extensions to MIME types
-//    @Nullable
-//    private String getMimeType(@NonNull String fileExtension) {
-//        String mimeType;
-//        if (fileExtension.equalsIgnoreCase("pdf")) {
-//            mimeType = "application/pdf";
-//        } else if (fileExtension.equalsIgnoreCase("jpg") || fileExtension.equalsIgnoreCase("jpeg")) {
-//            mimeType = "image/jpeg";
-//        } else if (fileExtension.equalsIgnoreCase("png")) {
-//            mimeType = "image/png";
-//        } else if (fileExtension.equalsIgnoreCase("gif")) {
-//            mimeType = "image/gif";
-//        } else if (fileExtension.equalsIgnoreCase("doc") || fileExtension.equalsIgnoreCase("docx")) {
-//            mimeType = "application/msword";
-//        } else if (fileExtension.equalsIgnoreCase("ppt") || fileExtension.equalsIgnoreCase("pptx")) {
-//            mimeType = "application/vnd.ms-powerpoint";
-//        } else if (fileExtension.equalsIgnoreCase("xls") || fileExtension.equalsIgnoreCase("xlsx")) {
-//            mimeType = "application/vnd.ms-excel";
-//        } else if (fileExtension.equalsIgnoreCase("txt")) {
-//            mimeType = "text/plain";
-//        } else if (fileExtension.equalsIgnoreCase("mp3")) {
-//            mimeType = "audio/mpeg";
-//        } else if (fileExtension.equalsIgnoreCase("mp4")) {
-//            mimeType = "video/mp4";
-//        } else {
-//            mimeType = null; // Unsupported file type
-//        }
-//        return mimeType;
-//    }
-
     // Method to download a file using DownloadManager
     private void downloadFile(String fileUrl, String fileName) {
         DownloadManager downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
@@ -210,19 +165,14 @@ public class DetailedNotice extends AppCompatActivity {
     private void openFile(String fileUrl, String fileName) {
         try {
             Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setDataAndType(Uri.parse(fileUrl), "application/*");
+            intent.setDataAndType(Uri.parse(fileUrl), getMimeType(fileName));
             startActivity(intent);
         } catch (ActivityNotFoundException e) {
             Toast.makeText(this, "No app found to open this file", Toast.LENGTH_SHORT).show();
         }
     }
 
-
-
-
-
     // Helper method to get MIME type from file name
-    @Nullable
     private String getMimeType(String fileName) {
         String extension = MimeTypeMap.getFileExtensionFromUrl(fileName);
         String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.toLowerCase());

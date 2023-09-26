@@ -4,12 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    tools:context=".ChapterCreatorActivity">
 
     <!-- Toolbar -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar1"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:layout_marginTop="4dp"
         android:background="@color/white"
@@ -23,41 +23,39 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="?android:attr/homeAsUpIndicator"
-        app:title="dsddssds"
-        app:titleTextColor="@android:color/black" />
+        app:title="Chapter Creator"
+        app:titleTextColor="@android:color/black">
+    </androidx.appcompat.widget.Toolbar>
 
-    <!-- Description TextView -->
-    <TextView
-        android:id="@+id/textViewDescription"
-        android:layout_width="match_parent"
+    <!-- Chapter Number EditText -->
+    <EditText
+        android:id="@+id/editTextChapterNumber"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Notice Description Goes Here"
-        android:textColor="@color/black"
-        android:textStyle="bold"
+        android:hint="Chapter Number"
+        android:inputType="number"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar1" />
 
-    <!-- Guideline to create a gap of 16dp -->
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
+    <!-- Chapter Name EditText -->
+    <EditText
+        android:id="@+id/editTextChapterName"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.94" />
-
-    <!-- File List RecyclerView -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewFiles"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:hint="Chapter Name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewDescription"
-        tools:listitem="@layout/file_list_item"/>
+        app:layout_constraintTop_toBottomOf="@+id/editTextChapterNumber" />
+
+    <!-- Create Chapter Button -->
+    <Button
+        android:id="@+id/buttonCreateChapter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create Chapter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextChapterName" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
