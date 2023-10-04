@@ -102,7 +102,7 @@
         android:layout_alignBottom="@id/fabChapter"
         android:layout_margin="16dp"
         android:layout_marginBottom="20dp"
-        android:text="Create Unit"
+        android:text="Add lesson"
         app:layout_constraintBottom_toTopOf="@+id/fabChapter"
         app:layout_constraintEnd_toEndOf="parent"
         android:visibility="gone" />

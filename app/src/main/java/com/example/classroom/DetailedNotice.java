@@ -202,8 +202,6 @@ public class DetailedNotice extends AppCompatActivity {
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 
         long downloadId = downloadManager.enqueue(request);
-
-        // You can add more logic here, such as tracking the download progress.
     }
 
     // Method to open a file using an appropriate app
@@ -216,10 +214,6 @@ public class DetailedNotice extends AppCompatActivity {
             Toast.makeText(this, "No app found to open this file", Toast.LENGTH_SHORT).show();
         }
     }
-
-
-
-
 
     // Helper method to get MIME type from file name
     @Nullable

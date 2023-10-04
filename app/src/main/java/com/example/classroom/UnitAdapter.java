@@ -35,7 +35,7 @@ public class UnitAdapter extends RecyclerView.Adapter<UnitAdapter.UnitViewHolder
     @Override
     public void onBindViewHolder(@NonNull UnitViewHolder holder, int position) {
         UnitItem unit = unitList.get(position);
-        holder.textViewUnitNum.setText("Unit "+unit.getUnitNum());
+        holder.textViewUnitNum.setText("Lesson "+unit.getUnitNum());
         holder.textViewUnitName.setText(unit.getUnitName());
     }
 

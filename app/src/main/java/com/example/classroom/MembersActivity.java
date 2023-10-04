@@ -17,7 +17,9 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MembersActivity extends AppCompatActivity {
 
@@ -25,6 +27,7 @@ public class MembersActivity extends AppCompatActivity {
     private List<Users> studentsList = new ArrayList<>();
     private RecyclerView teachersRecyclerView, studentsRecyclerView;
     private MembersAdapter teachersAdapter, studentsAdapter;
+    private Set<String> teacherUserIds = new HashSet<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +82,9 @@ public class MembersActivity extends AppCompatActivity {
                 for (DataSnapshot teacherSnapshot : teachersSnapshot.getChildren()) {
                     String teacherId = teacherSnapshot.getValue(String.class);
 
-                    Log.d("MembersActivity", "teacherId: " + teacherId);
+                    // Add teacher ID to the set
+                    teacherUserIds.add(teacherId);
+
                     // Fetch teacher's data from Users node
                     usersRef.child(teacherId).get()
                             .addOnSuccessListener(teacherUserSnapshot -> {
@@ -98,16 +103,18 @@ public class MembersActivity extends AppCompatActivity {
                 for (DataSnapshot studentSnapshot : studentsSnapshot.getChildren()) {
                     String studentId = studentSnapshot.getValue(String.class);
 
-                    Log.d("MembersActivity", "studentId: " + studentId);
-                    // Fetch student's data from Users node
-                    usersRef.child(studentId).get()
-                            .addOnSuccessListener(studentUserSnapshot -> {
-                                if (studentUserSnapshot.exists()) {
-                                    Users student = studentUserSnapshot.getValue(Users.class);
-                                    studentsList.add(student);
-                                    studentsAdapter.notifyDataSetChanged();
-                                }
-                            });
+                    // Check if the student ID is not in the teacherUserIds set
+                    if (!teacherUserIds.contains(studentId)) {
+                        // Fetch student's data from Users node
+                        usersRef.child(studentId).get()
+                                .addOnSuccessListener(studentUserSnapshot -> {
+                                    if (studentUserSnapshot.exists()) {
+                                        Users student = studentUserSnapshot.getValue(Users.class);
+                                        studentsList.add(student);
+                                        studentsAdapter.notifyDataSetChanged();
+                                    }
+                                });
+                    }
                 }
             }
         });

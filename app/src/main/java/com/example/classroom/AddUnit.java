@@ -52,7 +52,7 @@ public class AddUnit extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle("Add Unit");
+        getSupportActionBar().setTitle("Add Lesson");
 
         // Firebase Realtime Database setup
         String classroomId = getIntent().getStringExtra("classroomId");
@@ -80,7 +80,7 @@ public class AddUnit extends AppCompatActivity {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
                         // Unit number already exists, show an error message
-                        editTextUnitNumber.setError("Unit number already exists");
+                        editTextUnitNumber.setError("Lesson number already exists");
                     } else {
                         // Unit number is unique, create the unit
                         unitsRef.child(unitNumber).child("unitName").setValue(unitName);
@@ -98,10 +98,10 @@ public class AddUnit extends AppCompatActivity {
         } else {
             // Show an error message if any field is empty
             if (unitNumber.isEmpty()) {
-                editTextUnitNumber.setError("Unit number is required");
+                editTextUnitNumber.setError("Lesson number is required");
             }
             if (unitName.isEmpty()) {
-                editTextUnitName.setError("Unit name is required");
+                editTextUnitName.setError("Lesson name is required");
             }
         }
     }

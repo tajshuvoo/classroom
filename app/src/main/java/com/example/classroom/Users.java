@@ -1,16 +1,25 @@
 package com.example.classroom;
 
 public class Users {
-    String userId,name,profile;
+    String userId,name,profile,mail;
 
-    public Users(String userId, String name, String profile) {
+    public Users(String userId, String name, String profile,String mail) {
         this.userId = userId;
         this.name = name;
         this.profile = profile;
+        this.mail =mail;
     }
 
 
     public Users() {
+    }
+
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
     }
 
     public String getUserId() {

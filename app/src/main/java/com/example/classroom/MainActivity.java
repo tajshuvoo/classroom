@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     FirebaseDatabase database;
 
 
+    Users users = new Users();
 
 
     @Override
@@ -129,13 +130,12 @@ public class MainActivity extends AppCompatActivity {
                 if(task.isSuccessful()){
                     FirebaseUser user = auth.getCurrentUser();
 
-                    Users users = new Users();
                     users.setUserId(user.getUid());
                     users.setName(user.getDisplayName());
                     users.setProfile(user.getPhotoUrl().toString());
+                    users.setMail(user.getEmail());
 
                     database.getReference().child("Users").child(user.getUid()).setValue(users);
-
                     startNextActivity();
                 }
             }
@@ -154,7 +154,8 @@ public class MainActivity extends AppCompatActivity {
     private void startNextActivity() {
         String userId = auth.getCurrentUser().getUid();
         saveUserIdToSharedPreferences(userId);
-        startActivity(new Intent(MainActivity.this, SecondActivity.class));
+        Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+        startActivity(intent);
         finish();
     }
 
